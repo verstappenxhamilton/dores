@@ -24,6 +24,12 @@
       const data = await res.json();
       const list = document.getElementById('timeline');
       list.innerHTML = '';
+      if (data.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = 'Nenhuma entrada registrada.';
+        list.appendChild(li);
+        return;
+      }
       data.forEach(item => {
         const li = document.createElement('li');
         li.textContent = `${item.timestamp} - Nível ${item.level}: ${item.description}`;

@@ -20,7 +20,9 @@ Visualize a linha do tempo das ocorrências:
 python pain_tracker.py linha_do_tempo
 ```
 
-As entradas são armazenadas no arquivo `pain_data.json` na raiz do projeto.
+As entradas são armazenadas no arquivo `pain_data.json` na raiz do projeto. O
+código responsável por ler e gravar esse arquivo está em `storage.py`, sendo
+compartilhado pelo modo de linha de comando e pelo servidor web.
 
 
 ## Modo web

@@ -1,24 +1,14 @@
 import json
 from http.server import SimpleHTTPRequestHandler, HTTPServer
-from pathlib import Path
 from datetime import datetime
 
-DATA_FILE = Path("pain_data.json")
+from storage import load_data, save_data
 
 class PainHandler(SimpleHTTPRequestHandler):
-    def _load_data(self):
-        if DATA_FILE.exists():
-            with open(DATA_FILE, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        return []
-
-    def _save_data(self, data):
-        with open(DATA_FILE, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
 
     def do_GET(self):
         if self.path == '/api/entries':
-            data = self._load_data()
+            data = load_data()
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
@@ -35,11 +25,11 @@ class PainHandler(SimpleHTTPRequestHandler):
             except json.JSONDecodeError:
                 self.send_error(400, 'Invalid JSON')
                 return
-            data = self._load_data()
+            data = load_data()
             entry.setdefault('timestamp', datetime.now().isoformat())
             data.append(entry)
             data.sort(key=lambda x: x['timestamp'])
-            self._save_data(data)
+            save_data(data)
             self.send_response(201)
             self.send_header('Content-Type', 'application/json')
             self.end_headers()

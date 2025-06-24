@@ -1,31 +1,6 @@
-import json
-from datetime import datetime
-from pathlib import Path
 import argparse
 
-DATA_FILE = Path("pain_data.json")
-
-
-def load_data():
-    if DATA_FILE.exists():
-        with open(DATA_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return []
-
-
-def save_data(data):
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
-
-def add_entry(level, description, timestamp=None):
-    data = load_data()
-    if timestamp is None:
-        timestamp = datetime.now().isoformat()
-    data.append({'level': level, 'description': description, 'timestamp': timestamp})
-    data.sort(key=lambda x: x['timestamp'])
-    save_data(data)
-    print('Entrada adicionada com sucesso.')
+from storage import load_data, add_entry
 
 
 def show_timeline():
@@ -59,6 +34,7 @@ def main(argv=None):
 
     if args.command == "adicionar":
         add_entry(args.nivel, args.descricao, timestamp=args.timestamp)
+        print('Entrada adicionada com sucesso.')
     elif args.command == "linha_do_tempo":
         show_timeline()
     else:
