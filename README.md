@@ -50,10 +50,12 @@ Rode um pequeno servidor HTTP e acesse o aplicativo pelo navegador.
 python server.py
 ```
 
+O arquivo `index.html` é servido automaticamente ao acessar `/` no navegador.
+
 Abra `http://localhost:8000` no navegador para adicionar novas entradas e ver a linha do tempo. Cada item possui um botão "Remover" para exclusão e a página exibe estatísticas com o total de registros e níveis médio e máximo.
 O formulário na página permite informar opcionalmente a data e hora do evento.
 
-O servidor lê as variáveis `PAIN_SERVER_HOST` e `PAIN_SERVER_PORT` para definir o endereço de escuta. Toda requisição é registrada em `server.log` para fins de auditoria.
+O servidor lê as variáveis `PAIN_SERVER_HOST` e `PAIN_SERVER_PORT` para definir o endereço de escuta. Caso `PAIN_SERVER_PORT` não esteja definida, ele usa o valor da variável `PORT`, comum em serviços de hospedagem como o Render. Toda requisição é registrada em `server.log` para fins de auditoria.
 
 ## Deploy no Render
 

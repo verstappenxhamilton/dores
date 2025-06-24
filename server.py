@@ -22,6 +22,13 @@ class PainHandler(SimpleHTTPRequestHandler):
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps(stats).encode('utf-8'))
+        elif self.path == '/' or self.path == '/index.html':
+            # Garante que o arquivo de interface sempre seja encontrado
+            with open(os.path.join(self.directory, 'index.html'), 'rb') as f:
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html; charset=utf-8')
+                self.end_headers()
+                self.wfile.write(f.read())
         else:
             super().do_GET()
 
@@ -70,7 +77,7 @@ class PainHandler(SimpleHTTPRequestHandler):
 def run(server_class=HTTPServer, handler_class=PainHandler):
     """Inicia o servidor lendo host e porta das variáveis de ambiente."""
     host = os.environ.get("PAIN_SERVER_HOST", "0.0.0.0")
-    port = int(os.environ.get("PAIN_SERVER_PORT", "8000"))
+    port = int(os.environ.get("PAIN_SERVER_PORT") or os.environ.get("PORT", "8000"))
 
     logging.basicConfig(
         filename="server.log",
@@ -78,6 +85,7 @@ def run(server_class=HTTPServer, handler_class=PainHandler):
         format="%(asctime)s %(levelname)s: %(message)s",
     )
 
+    handler_class.directory = os.path.dirname(os.path.abspath(__file__))
     server = server_class((host, port), handler_class)
     print(f"Serving on http://{host}:{port}")
     server.serve_forever()
