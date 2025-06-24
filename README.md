@@ -35,9 +35,11 @@ Veja estatísticas gerais:
 python pain_tracker.py estatisticas
 ```
 
-As entradas são armazenadas no arquivo `pain_data.json` na raiz do projeto. O
-código responsável por ler e gravar esse arquivo está em `storage.py`, sendo
-compartilhado pelo modo de linha de comando e pelo servidor web.
+As entradas são armazenadas por padrão no arquivo `pain_data.json` na raiz do
+projeto. Defina a variável de ambiente `PAIN_DATA_FILE` para escolher outro
+local de armazenamento. O código que manipula esse arquivo fica em
+`storage.py`, sendo compartilhado pelo modo de linha de comando e pelo
+servidor web.
 
 
 ## Modo web
@@ -50,6 +52,8 @@ python server.py
 
 Abra `http://localhost:8000` no navegador para adicionar novas entradas e ver a linha do tempo. Cada item possui um botão "Remover" para exclusão e a página exibe estatísticas com o total de registros e níveis médio e máximo.
 O formulário na página permite informar opcionalmente a data e hora do evento.
+
+O servidor lê as variáveis `PAIN_SERVER_HOST` e `PAIN_SERVER_PORT` para definir o endereço de escuta. Toda requisição é registrada em `server.log` para fins de auditoria.
 
 ## Deploy no Render
 

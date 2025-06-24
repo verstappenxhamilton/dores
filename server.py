@@ -1,4 +1,8 @@
+"""Servidor HTTP simples para registrar crises de dor via navegador."""
+
 import json
+import logging
+import os
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 
 from storage import load_data, add_entry, remove_entry, compute_stats
@@ -42,6 +46,7 @@ class PainHandler(SimpleHTTPRequestHandler):
                 self.send_error(400, 'Level must be an integer')
                 return
             new_entry = add_entry(level, description, timestamp=timestamp)
+            logging.info("Entrada adicionada: %s", new_entry['id'])
             self.send_response(201)
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
@@ -53,6 +58,7 @@ class PainHandler(SimpleHTTPRequestHandler):
         if self.path.startswith('/api/entries/'):
             entry_id = self.path.rsplit('/', 1)[-1]
             if remove_entry(entry_id):
+                logging.info("Entrada removida: %s", entry_id)
                 self.send_response(204)
                 self.end_headers()
             else:
@@ -62,8 +68,18 @@ class PainHandler(SimpleHTTPRequestHandler):
 
 
 def run(server_class=HTTPServer, handler_class=PainHandler):
-    server = server_class(('0.0.0.0', 8000), handler_class)
-    print('Serving on http://0.0.0.0:8000')
+    """Inicia o servidor lendo host e porta das variáveis de ambiente."""
+    host = os.environ.get("PAIN_SERVER_HOST", "0.0.0.0")
+    port = int(os.environ.get("PAIN_SERVER_PORT", "8000"))
+
+    logging.basicConfig(
+        filename="server.log",
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s: %(message)s",
+    )
+
+    server = server_class((host, port), handler_class)
+    print(f"Serving on http://{host}:{port}")
     server.serve_forever()
 
 

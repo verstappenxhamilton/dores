@@ -1,13 +1,18 @@
+"""Funções utilitárias para persistência das entradas de dor."""
+
 import json
+import os
 from datetime import datetime
 import uuid
 from pathlib import Path
 
-DATA_FILE = Path("pain_data.json")
+#: Caminho padrão do arquivo de dados. Pode ser alterado definindo a
+#: variável de ambiente ``PAIN_DATA_FILE``.
+DATA_FILE = Path(os.environ.get("PAIN_DATA_FILE", "pain_data.json"))
 
 
 def load_data():
-    """Load entries from disk and ensure each has a unique id."""
+    """Carrega as entradas do disco e garante que todas possuam um ID."""
     if DATA_FILE.exists():
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -26,12 +31,13 @@ def load_data():
 
 
 def save_data(data):
+    """Grava a lista de entradas no arquivo configurado."""
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
 def add_entry(level, description, timestamp=None):
-    """Add a new pain entry and return it."""
+    """Adiciona uma nova ocorrência e a retorna."""
     data = load_data()
     if timestamp is None:
         timestamp = datetime.now().isoformat()
@@ -48,7 +54,7 @@ def add_entry(level, description, timestamp=None):
 
 
 def remove_entry(entry_id):
-    """Remove an entry by id. Return True if removed."""
+    """Remove uma entrada pelo ID. Retorna ``True`` se removida."""
     data = load_data()
     new_data = [e for e in data if e.get('id') != entry_id]
     if len(new_data) == len(data):
@@ -58,7 +64,7 @@ def remove_entry(entry_id):
 
 
 def compute_stats():
-    """Return statistics about stored entries."""
+    """Calcula estatísticas gerais das ocorrências armazenadas."""
     data = load_data()
     if not data:
         return {
