@@ -55,3 +55,23 @@ def remove_entry(entry_id):
         return False
     save_data(new_data)
     return True
+
+
+def compute_stats():
+    """Return statistics about stored entries."""
+    data = load_data()
+    if not data:
+        return {
+            'total': 0,
+            'media_nivel': 0,
+            'nivel_maximo': 0,
+        }
+    total = len(data)
+    levels = [int(e['level']) for e in data]
+    media = sum(levels) / total
+    nivel_max = max(levels)
+    return {
+        'total': total,
+        'media_nivel': round(media, 2),
+        'nivel_maximo': nivel_max,
+    }

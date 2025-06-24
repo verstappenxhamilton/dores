@@ -1,7 +1,7 @@
 import json
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 
-from storage import load_data, add_entry, remove_entry
+from storage import load_data, add_entry, remove_entry, compute_stats
 
 class PainHandler(SimpleHTTPRequestHandler):
 
@@ -12,6 +12,12 @@ class PainHandler(SimpleHTTPRequestHandler):
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps(data).encode('utf-8'))
+        elif self.path == '/api/stats':
+            stats = compute_stats()
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(stats).encode('utf-8'))
         else:
             super().do_GET()
 

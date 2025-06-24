@@ -18,6 +18,8 @@
   </form>
   <h2>Linha do Tempo</h2>
   <ul id="timeline"></ul>
+  <h2>Estatísticas</h2>
+  <div id="stats"></div>
 
   <script>
     async function loadTimeline() {
@@ -43,6 +45,14 @@
         li.appendChild(btn);
         list.appendChild(li);
       });
+      loadStats();
+    }
+
+    async function loadStats() {
+      const res = await fetch('/api/stats');
+      const stats = await res.json();
+      const div = document.getElementById('stats');
+      div.textContent = `Total: ${stats.total}, Média: ${stats.media_nivel}, Máximo: ${stats.nivel_maximo}`;
     }
 
     document.getElementById('entry-form').addEventListener('submit', async (e) => {
@@ -59,9 +69,11 @@
       document.getElementById('description').value = '';
       document.getElementById('timestamp').value = '';
       loadTimeline();
+      loadStats();
     });
 
     loadTimeline();
+    loadStats();
   </script>
 </body>
 </html>

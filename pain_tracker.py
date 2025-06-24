@@ -1,6 +1,6 @@
 import argparse
 
-from storage import load_data, add_entry, remove_entry
+from storage import load_data, add_entry, remove_entry, compute_stats
 
 
 def show_timeline():
@@ -26,6 +26,7 @@ def build_parser():
     add_cmd.add_argument("--timestamp", help="Data e hora no formato ISO", default=None)
 
     subparsers.add_parser("linha_do_tempo", help="Mostrar linha do tempo")
+    subparsers.add_parser("estatisticas", help="Exibir estatísticas")
 
     remove_cmd = subparsers.add_parser("remover", help="Remover entrada pelo ID")
     remove_cmd.add_argument("id", help="ID da entrada a remover")
@@ -41,6 +42,11 @@ def main(argv=None):
         print('Entrada adicionada com sucesso.')
     elif args.command == "linha_do_tempo":
         show_timeline()
+    elif args.command == "estatisticas":
+        stats = compute_stats()
+        print(f"Total de entradas: {stats['total']}")
+        print(f"Média do nível de dor: {stats['media_nivel']}")
+        print(f"Nível máximo registrado: {stats['nivel_maximo']}")
     elif args.command == "remover":
         if remove_entry(args.id):
             print('Entrada removida.')
