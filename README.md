@@ -50,3 +50,10 @@ python server.py
 
 Abra `http://localhost:8000` no navegador para adicionar novas entradas e ver a linha do tempo. Cada item possui um botão "Remover" para exclusão e a página exibe estatísticas com o total de registros e níveis médio e máximo.
 O formulário na página permite informar opcionalmente a data e hora do evento.
+
+## Deploy no Render
+
+Este projeto inclui um `render.yaml` para facilitar a criação de um Web Service
+no [Render](https://render.com). Escolha "Web Service" e não "Static Site" ao
+conectar o repositório. Não há etapa de build; o Render apenas instala o
+`requirements.txt` e executa `python server.py`.
