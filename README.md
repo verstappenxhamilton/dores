@@ -34,3 +34,4 @@ python server.py
 ```
 
 Abra `http://localhost:8000` no navegador para adicionar novas entradas e ver a linha do tempo.
+O formulário na página permite informar opcionalmente a data e hora do evento.

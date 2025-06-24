@@ -2,7 +2,7 @@ import json
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 from datetime import datetime
 
-from storage import load_data, save_data
+from storage import load_data, add_entry
 
 class PainHandler(SimpleHTTPRequestHandler):
 
@@ -25,15 +25,17 @@ class PainHandler(SimpleHTTPRequestHandler):
             except json.JSONDecodeError:
                 self.send_error(400, 'Invalid JSON')
                 return
-            data = load_data()
-            entry.setdefault('timestamp', datetime.now().isoformat())
-            data.append(entry)
-            data.sort(key=lambda x: x['timestamp'])
-            save_data(data)
+            level = entry.get('level')
+            description = entry.get('description')
+            timestamp = entry.get('timestamp')
+            if level is None or description is None:
+                self.send_error(400, 'Missing level or description')
+                return
+            new_entry = add_entry(level, description, timestamp=timestamp)
             self.send_response(201)
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps(entry).encode('utf-8'))
+            self.wfile.write(json.dumps(new_entry).encode('utf-8'))
         else:
             self.send_error(404)
 

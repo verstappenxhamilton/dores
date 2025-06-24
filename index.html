@@ -13,6 +13,7 @@
   <form id="entry-form">
     <label>Nível da Dor: <input type="number" id="level" required></label><br>
     <label>Descrição: <input type="text" id="description" required></label><br>
+    <label>Data e Hora: <input type="datetime-local" id="timestamp"></label><br>
     <button type="submit">Adicionar</button>
   </form>
   <h2>Linha do Tempo</h2>
@@ -41,13 +42,15 @@
       e.preventDefault();
       const level = document.getElementById('level').value;
       const description = document.getElementById('description').value;
+      const timestamp = document.getElementById('timestamp').value || undefined;
       await fetch('/api/entries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ level, description })
+        body: JSON.stringify({ level, description, timestamp })
       });
       document.getElementById('level').value = '';
       document.getElementById('description').value = '';
+      document.getElementById('timestamp').value = '';
       loadTimeline();
     });
 

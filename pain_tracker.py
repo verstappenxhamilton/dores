@@ -20,7 +20,7 @@ def build_parser():
     subparsers = parser.add_subparsers(dest="command")
 
     add_cmd = subparsers.add_parser("adicionar", help="Adicionar nova ocorrência")
-    add_cmd.add_argument("nivel", help="Nível da dor")
+    add_cmd.add_argument("nivel", type=int, help="Nível da dor")
     add_cmd.add_argument("descricao", help="Descrição da dor")
     add_cmd.add_argument("--timestamp", help="Data e hora no formato ISO", default=None)
 
