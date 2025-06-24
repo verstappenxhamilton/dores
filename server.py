@@ -1,8 +1,7 @@
 import json
 from http.server import SimpleHTTPRequestHandler, HTTPServer
-from datetime import datetime
 
-from storage import load_data, add_entry
+from storage import load_data, add_entry, remove_entry
 
 class PainHandler(SimpleHTTPRequestHandler):
 
@@ -31,11 +30,27 @@ class PainHandler(SimpleHTTPRequestHandler):
             if level is None or description is None:
                 self.send_error(400, 'Missing level or description')
                 return
+            try:
+                level = int(level)
+            except (TypeError, ValueError):
+                self.send_error(400, 'Level must be an integer')
+                return
             new_entry = add_entry(level, description, timestamp=timestamp)
             self.send_response(201)
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps(new_entry).encode('utf-8'))
+        else:
+            self.send_error(404)
+
+    def do_DELETE(self):
+        if self.path.startswith('/api/entries/'):
+            entry_id = self.path.rsplit('/', 1)[-1]
+            if remove_entry(entry_id):
+                self.send_response(204)
+                self.end_headers()
+            else:
+                self.send_error(404, 'ID not found')
         else:
             self.send_error(404)
 

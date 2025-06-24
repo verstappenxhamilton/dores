@@ -33,7 +33,14 @@
       }
       data.forEach(item => {
         const li = document.createElement('li');
-        li.textContent = `${item.timestamp} - Nível ${item.level}: ${item.description}`;
+        li.textContent = `[${item.id}] ${item.timestamp} - Nível ${item.level}: ${item.description} `;
+        const btn = document.createElement('button');
+        btn.textContent = 'Remover';
+        btn.addEventListener('click', async () => {
+          await fetch(`/api/entries/${item.id}`, { method: 'DELETE' });
+          loadTimeline();
+        });
+        li.appendChild(btn);
         list.appendChild(li);
       });
     }

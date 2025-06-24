@@ -1,6 +1,6 @@
 import argparse
 
-from storage import load_data, add_entry
+from storage import load_data, add_entry, remove_entry
 
 
 def show_timeline():
@@ -12,7 +12,8 @@ def show_timeline():
         time = item['timestamp']
         level = item['level']
         desc = item['description']
-        print(f"{time} - Nível {level}: {desc}")
+        entry_id = item.get('id', 'sem-id')
+        print(f"[{entry_id}] {time} - Nível {level}: {desc}")
 
 
 def build_parser():
@@ -25,6 +26,9 @@ def build_parser():
     add_cmd.add_argument("--timestamp", help="Data e hora no formato ISO", default=None)
 
     subparsers.add_parser("linha_do_tempo", help="Mostrar linha do tempo")
+
+    remove_cmd = subparsers.add_parser("remover", help="Remover entrada pelo ID")
+    remove_cmd.add_argument("id", help="ID da entrada a remover")
     return parser
 
 
@@ -37,6 +41,11 @@ def main(argv=None):
         print('Entrada adicionada com sucesso.')
     elif args.command == "linha_do_tempo":
         show_timeline()
+    elif args.command == "remover":
+        if remove_entry(args.id):
+            print('Entrada removida.')
+        else:
+            print('ID não encontrado.')
     else:
         parser.print_help()
 
