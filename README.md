@@ -22,3 +22,13 @@ python pain_tracker.py linha_do_tempo
 
 As entradas são armazenadas no arquivo `pain_data.json` na raiz do projeto.
 
+
+## Modo web
+
+Rode um pequeno servidor HTTP e acesse o aplicativo pelo navegador.
+
+```bash
+python server.py
+```
+
+Abra `http://localhost:8000` no navegador para adicionar novas entradas e ver a linha do tempo.

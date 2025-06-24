@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Agoravai Pain Tracker</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    form { margin-bottom: 1em; }
+  </style>
+</head>
+<body>
+  <h1>Agoravai Pain Tracker</h1>
+  <form id="entry-form">
+    <label>Nível da Dor: <input type="number" id="level" required></label><br>
+    <label>Descrição: <input type="text" id="description" required></label><br>
+    <button type="submit">Adicionar</button>
+  </form>
+  <h2>Linha do Tempo</h2>
+  <ul id="timeline"></ul>
+
+  <script>
+    async function loadTimeline() {
+      const res = await fetch('/api/entries');
+      const data = await res.json();
+      const list = document.getElementById('timeline');
+      list.innerHTML = '';
+      data.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.timestamp} - Nível ${item.level}: ${item.description}`;
+        list.appendChild(li);
+      });
+    }
+
+    document.getElementById('entry-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const level = document.getElementById('level').value;
+      const description = document.getElementById('description').value;
+      await fetch('/api/entries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ level, description })
+      });
+      document.getElementById('level').value = '';
+      document.getElementById('description').value = '';
+      loadTimeline();
+    });
+
+    loadTimeline();
+  </script>
+</body>
+</html>
