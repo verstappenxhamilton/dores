@@ -1,4 +1,5 @@
-import { FC, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import type { FC } from 'react';
 import { Box, Button, TextField, Slider, Typography, Paper, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 import type { PainEntry } from '../types/pain';
 import { generateId, saveEntry, getEntries } from '../services/painStorage';

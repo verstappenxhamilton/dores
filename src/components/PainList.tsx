@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { List, ListItem, ListItemText, IconButton, Typography, Box, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, ListItemButton, Pagination } from '@mui/material';
+import { List, ListItem, ListItemText, IconButton, Typography, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, ListItemButton, Pagination } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import type { PainEntry } from '../types/pain';
 import { format } from 'date-fns';
