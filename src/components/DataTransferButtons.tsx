@@ -1,4 +1,5 @@
-import { FC, useRef } from 'react';
+import { useRef } from 'react';
+import type { FC, ChangeEvent } from 'react';
 import { Button, Stack } from '@mui/material';
 import { exportEntries, importEntries } from '../services/painStorage';
 
@@ -20,7 +21,7 @@ export const DataTransferButtons: FC<DataTransferButtonsProps> = ({ onChange }) 
         URL.revokeObjectURL(url);
     };
 
-    const handleImportChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImportChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
         const reader = new FileReader();
