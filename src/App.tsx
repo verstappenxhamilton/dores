@@ -39,10 +39,10 @@ function App() {
           Registro de Dores
         </Typography>
         <Grid container spacing={3} justifyContent="center" alignItems="flex-start">
-          <Grid item xs={12} md={5}>
+          <Grid xs={12} md={5}>
             <PainForm onSubmit={handleNewEntry} />
           </Grid>
-          <Grid item xs={12} md={7}>
+          <Grid xs={12} md={7}>
             <PainList entries={painData} onDelete={handleDelete} />
           </Grid>
         </Grid>
