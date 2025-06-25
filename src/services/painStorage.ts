@@ -46,3 +46,17 @@ export const removeEntry = (id: string): void => {
     const data = getEntries().filter(entry => entry.id !== id);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 };
+
+export const exportEntries = (): string => {
+    migratePainEntries();
+    return JSON.stringify(getEntries(), null, 2);
+};
+
+export const importEntries = (json: string): void => {
+    const parsed = JSON.parse(json) as Array<Record<string, unknown>>;
+    const entries: PainEntry[] = parsed.map(entry => ({
+        ...(entry as unknown as PainEntry),
+        timestamp: new Date(entry.timestamp as string | number)
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+};

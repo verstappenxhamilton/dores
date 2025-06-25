@@ -4,6 +4,7 @@ import Grid from '@mui/material/GridLegacy'
 import { PainForm } from './components/PainForm'
 import { PainChart } from './components/PainChart'
 import { PainList } from './components/PainList'
+import { DataTransferButtons } from './components/DataTransferButtons'
 import { getEntries, removeEntry } from './services/painStorage'
 import type { PainData } from './types/pain'
 
@@ -47,6 +48,7 @@ function App() {
           </Grid>
         </Grid>
         <PainChart data={painData} />
+        <DataTransferButtons onChange={() => setPainData(getEntries())} />
         <Snackbar open={openSnackbar} autoHideDuration={2000} onClose={() => setOpenSnackbar(false)} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
           <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
             Registro salvo com sucesso!
