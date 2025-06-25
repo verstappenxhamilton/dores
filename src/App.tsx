@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Container, CssBaseline, ThemeProvider, createTheme, Typography, Snackbar, Alert } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2'
+import Grid from '@mui/material/Grid'
 import { PainForm } from './components/PainForm'
 import { PainChart } from './components/PainChart'
 import { PainList } from './components/PainList'
@@ -39,10 +39,10 @@ function App() {
           Registro de Dores
         </Typography>
         <Grid container spacing={3} justifyContent="center" alignItems="flex-start">
-          <Grid xs={12} md={5}>
+          <Grid item xs={12} md={5}>
             <PainForm onSubmit={handleNewEntry} />
           </Grid>
-          <Grid xs={12} md={7}>
+          <Grid item xs={12} md={7}>
             <PainList entries={painData} onDelete={handleDelete} />
           </Grid>
         </Grid>
