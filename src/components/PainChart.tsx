@@ -59,6 +59,7 @@ export const PainChart: FC<PainChartProps> = ({ data }) => {
                 data: values,
                 borderColor: colors[idx],
                 backgroundColor: colors[idx] + '80',
+                spanGaps: true,
                 pointBackgroundColor: ids.map(id => {
                     const entry = data.find(e => e.id === id);
                     return entry?.comment ? '#ff9800' : colors[idx];
