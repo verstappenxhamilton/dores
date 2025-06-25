@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Container, CssBaseline, ThemeProvider, createTheme, Typography, Snackbar, Alert } from '@mui/material'
-import Grid from '@mui/material/Grid'
+import Grid from '@mui/material/GridLegacy'
 import { PainForm } from './components/PainForm'
 import { PainChart } from './components/PainChart'
 import { PainList } from './components/PainList'
