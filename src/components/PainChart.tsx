@@ -1,5 +1,6 @@
-import { FC, useEffect, useRef, useState } from 'react';
-import { Box, Paper, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+import type { FC } from 'react';
+import { Paper, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -11,7 +12,6 @@ import {
     Legend
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { Chart } from 'chart.js';
 import type { PainData } from '../types/pain';
 import { format } from 'date-fns';
 
@@ -114,10 +114,8 @@ export const PainChart: FC<PainChartProps> = ({ data }) => {
             tooltip: {
                 callbacks: {
                     afterLabel: (context: any) => {
-                        const dataIndex = context.dataIndex;
-                        const datasetIndex = context.datasetIndex;
-                        const entry = data.find(e => 
-                            e.location === context.dataset.label && 
+                        const entry = data.find(e =>
+                            e.location === context.dataset.label &&
                             format(e.timestamp, 'dd/MM HH:mm') === context.label
                         );
                         return entry?.comment ? `Comentário: ${entry.comment}` : '';
