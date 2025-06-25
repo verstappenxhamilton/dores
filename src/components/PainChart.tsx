@@ -11,8 +11,9 @@ import {
     Tooltip,
     Legend
 } from 'chart.js';
+import type { TooltipItem } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import type { PainData } from '../types/pain';
+import type { PainData, PainEntry } from '../types/pain';
 import { format } from 'date-fns';
 
 ChartJS.register(
@@ -30,33 +31,55 @@ interface PainChartProps {
 }
 
 export const PainChart: FC<PainChartProps> = ({ data }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [chartData, setChartData] = useState<any>(null);
-    const [selected, setSelected] = useState<any>(null);
+    const [selected, setSelected] = useState<PainEntry | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const chartRef = useRef<any>(null);
-    const pointIdsRef = useRef<string[][]>([]); // ids dos pontos por dataset
+    const pointIdsRef = useRef<(string | null)[][]>([]); // ids dos pontos por dataset
 
     useEffect(() => {
         const sortedData = [...data].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+        const labels = sortedData.map(entry => format(entry.timestamp, 'dd/MM HH:mm'));
         const locations = Array.from(new Set(data.map(entry => entry.location)));
         const colors = locations.map((_, i) => `hsl(${(i * 360) / locations.length}, 70%, 50%)`);
-        const pointIds: string[][] = [];
+        const pointIds: (string | null)[][] = [];
         const datasets = locations.map((location, idx) => {
-            const locationData = sortedData.filter(entry => entry.location === location);
-            pointIds[idx] = locationData.map(entry => entry.id);
+            const values: Array<number | null> = Array(labels.length).fill(null);
+            const ids: Array<string | null> = Array(labels.length).fill(null);
+            sortedData.forEach((entry, i) => {
+                if (entry.location === location) {
+                    values[i] = entry.intensity;
+                    ids[i] = entry.id;
+                }
+            });
+            pointIds[idx] = ids;
             return {
                 label: location,
-                data: locationData.map(entry => entry.intensity),
+                data: values,
                 borderColor: colors[idx],
                 backgroundColor: colors[idx] + '80',
-                pointBackgroundColor: locationData.map(entry => entry.comment ? '#ff9800' : colors[idx]),
-                pointBorderColor: locationData.map(entry => entry.comment ? '#ff9800' : colors[idx]),
-                pointRadius: locationData.map(entry => entry.comment ? 8 : 4),
-                pointStyle: locationData.map(entry => entry.comment ? 'circle' : 'circle'),
+                pointBackgroundColor: ids.map(id => {
+                    const entry = data.find(e => e.id === id);
+                    return entry?.comment ? '#ff9800' : colors[idx];
+                }),
+                pointBorderColor: ids.map(id => {
+                    const entry = data.find(e => e.id === id);
+                    return entry?.comment ? '#ff9800' : colors[idx];
+                }),
+                pointRadius: ids.map(id => {
+                    const entry = data.find(e => e.id === id);
+                    return entry?.comment ? 8 : 4;
+                }),
+                pointStyle: ids.map(id => {
+                    const entry = data.find(e => e.id === id);
+                    return entry?.comment ? 'circle' : 'circle';
+                }),
             };
         });
         pointIdsRef.current = pointIds;
         setChartData({
-            labels: sortedData.map(entry => format(entry.timestamp, 'dd/MM HH:mm')),
+            labels,
             datasets
         });
     }, [data]);
@@ -86,7 +109,7 @@ export const PainChart: FC<PainChartProps> = ({ data }) => {
         };
     }, [chartData, data]);
 
-    const handlePointClick = (event: any) => {
+    const handlePointClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
         const chart = chartRef.current?.chart || chartRef.current;
         if (!chart || !event || !event.nativeEvent) return;
         const points = chart.getElementsAtEventForMode(event.nativeEvent, 'nearest', { intersect: true }, true);
@@ -113,7 +136,7 @@ export const PainChart: FC<PainChartProps> = ({ data }) => {
             },
             tooltip: {
                 callbacks: {
-                    afterLabel: (context: any) => {
+                    afterLabel: (context: TooltipItem<'line'>) => {
                         const entry = data.find(e =>
                             e.location === context.dataset.label &&
                             format(e.timestamp, 'dd/MM HH:mm') === context.label

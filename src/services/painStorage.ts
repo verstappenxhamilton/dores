@@ -6,14 +6,14 @@ const STORAGE_KEY = 'pain_tracker_data';
 export const migratePainEntries = (): void => {
     const data = localStorage.getItem(STORAGE_KEY);
     if (!data) return;
-    const parsed = JSON.parse(data);
+    const parsed = JSON.parse(data) as Array<Record<string, unknown>>;
     let changed = false;
-    const migrated = parsed.map((entry: any) => {
-        if (typeof entry.timestamp === 'string' || typeof entry.timestamp === 'number') {
+    const migrated = parsed.map((entry) => {
+        const timestamp = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.timestamp as string | number);
+        if (!(entry.timestamp instanceof Date)) {
             changed = true;
-            return { ...entry, timestamp: new Date(entry.timestamp) };
         }
-        return entry;
+        return { ...(entry as unknown as PainEntry), timestamp } as PainEntry;
     });
     if (changed) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
@@ -31,9 +31,9 @@ export const getEntries = (): PainEntry[] => {
     migratePainEntries();
     const data = localStorage.getItem(STORAGE_KEY);
     if (!data) return [];
-    return JSON.parse(data).map((entry: any) => ({
-        ...entry,
-        timestamp: new Date(entry.timestamp)
+    return (JSON.parse(data) as Array<Record<string, unknown>>).map((entry) => ({
+        ...(entry as unknown as PainEntry),
+        timestamp: new Date(entry.timestamp as string | number)
     }));
 };
 
