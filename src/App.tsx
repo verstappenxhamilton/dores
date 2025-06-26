@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Container, CssBaseline, ThemeProvider, createTheme, Typography, Snackbar, Alert } from '@mui/material'
-import Grid from '@mui/material/Unstable_Grid2'
+import Grid from '@mui/material/GridLegacy'
 import { PainForm } from './components/PainForm'
 import { PainChart } from './components/PainChart'
 import { PainList } from './components/PainList'
-import { getEntries, removeEntry } from './services/painStorage'
+import { getEntries, removeEntry, updateEntry } from './services/painStorage'
 import type { PainData } from './types/pain'
 
 const theme = createTheme({
@@ -31,6 +31,11 @@ function App() {
     setPainData(getEntries())
   }
 
+  const handleUpdateIntensity = (id: string, value: number) => {
+    updateEntry(id, { intensity: value })
+    setPainData(getEntries())
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -43,7 +48,7 @@ function App() {
             <PainForm onSubmit={handleNewEntry} />
           </Grid>
           <Grid xs={12} md={7}>
-            <PainList entries={painData} onDelete={handleDelete} />
+            <PainList entries={painData} onDelete={handleDelete} onIntensityChange={handleUpdateIntensity} />
           </Grid>
         </Grid>
         <PainChart data={painData} />

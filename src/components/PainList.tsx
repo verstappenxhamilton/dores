@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { List, ListItem, ListItemText, IconButton, Typography, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, ListItemButton, Pagination } from '@mui/material';
+import { List, ListItem, ListItemText, IconButton, Typography, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, ListItemButton, Pagination, Slider } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import type { PainEntry } from '../types/pain';
 import { format } from 'date-fns';
@@ -8,9 +8,10 @@ import { useState } from 'react';
 interface PainListProps {
   entries: PainEntry[];
   onDelete: (id: string) => void;
+  onIntensityChange?: (id: string, value: number) => void;
 }
 
-export const PainList: FC<PainListProps> = ({ entries, onDelete }) => {
+export const PainList: FC<PainListProps> = ({ entries, onDelete, onIntensityChange }) => {
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [selected, setSelected] = useState<PainEntry | null>(null);
   const [page, setPage] = useState(1);
@@ -28,20 +29,35 @@ export const PainList: FC<PainListProps> = ({ entries, onDelete }) => {
       <Typography variant="h6" gutterBottom align="center" fontWeight={600}>Todas as Dores Registradas</Typography>
       <List>
         {paginatedEntries.map(entry => (
-          <ListItem
-            key={entry.id}
-            secondaryAction={
+          <ListItem key={entry.id} sx={{ flexDirection: 'column', alignItems: 'stretch' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <ListItemButton onClick={() => setSelected(entry)} sx={{ flexGrow: 1, pr: 2 }}>
+                <ListItemText
+                  primary={`[${format(entry.timestamp, 'dd/MM HH:mm')}] ${entry.location}`}
+                  secondary={entry.comment ? 'Clique para ver comentário' : undefined}
+                />
+              </ListItemButton>
               <IconButton edge="end" aria-label="delete" onClick={e => { e.stopPropagation(); setConfirmId(entry.id); }}>
                 <DeleteIcon />
               </IconButton>
-            }
-          >
-            <ListItemButton onClick={() => setSelected(entry)}>
-              <ListItemText
-                primary={`[${format(entry.timestamp, 'dd/MM HH:mm')}] ${entry.location} - Intensidade: ${entry.intensity}`}
-                secondary={entry.comment ? 'Clique para ver comentário' : undefined}
-              />
-            </ListItemButton>
+            </div>
+            <Slider
+              value={entry.intensity}
+              onChange={(_, value) => {
+                if (onIntensityChange) {
+                  onIntensityChange(entry.id, value as number);
+                }
+                if (selected?.id === entry.id) {
+                  setSelected({ ...entry, intensity: value as number });
+                }
+              }}
+              min={1}
+              max={10}
+              step={1}
+              marks
+              valueLabelDisplay="auto"
+              sx={{ mt: 1 }}
+            />
           </ListItem>
         ))}
       </List>

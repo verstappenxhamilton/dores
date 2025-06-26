@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { FC } from 'react';
 import { Paper, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
 import {
@@ -12,7 +12,8 @@ import {
     Legend
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import type { PainData } from '../types/pain';
+import type { ChartData, Chart, TooltipItem } from 'chart.js';
+import type { PainData, PainEntry } from '../types/pain';
 import { format } from 'date-fns';
 
 ChartJS.register(
@@ -30,9 +31,9 @@ interface PainChartProps {
 }
 
 export const PainChart: FC<PainChartProps> = ({ data }) => {
-    const [chartData, setChartData] = useState<any>(null);
-    const [selected, setSelected] = useState<any>(null);
-    const chartRef = useRef<any>(null);
+    const [chartData, setChartData] = useState<ChartData<'line'> | null>(null);
+    const [selected, setSelected] = useState<PainEntry | null>(null);
+    const chartRef = useRef<Chart<'line'> | undefined>(undefined);
     const pointIdsRef = useRef<string[][]>([]); // ids dos pontos por dataset
 
     useEffect(() => {
@@ -63,9 +64,9 @@ export const PainChart: FC<PainChartProps> = ({ data }) => {
 
     useEffect(() => {
         if (!chartRef.current?.canvas) return;
-        const canvas = chartRef.current.canvas || chartRef.current?.canvas;
+        const canvas = chartRef.current.canvas;
         const handleMouseMove = (event: MouseEvent) => {
-            const chart = chartRef.current?.chart || chartRef.current;
+            const chart = chartRef.current;
             if (!chart) return;
             const points = chart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true);
             if (points.length) {
@@ -86,8 +87,8 @@ export const PainChart: FC<PainChartProps> = ({ data }) => {
         };
     }, [chartData, data]);
 
-    const handlePointClick = (event: any) => {
-        const chart = chartRef.current?.chart || chartRef.current;
+    const handlePointClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+        const chart = chartRef.current;
         if (!chart || !event || !event.nativeEvent) return;
         const points = chart.getElementsAtEventForMode(event.nativeEvent, 'nearest', { intersect: true }, true);
         if (points.length) {
@@ -113,7 +114,7 @@ export const PainChart: FC<PainChartProps> = ({ data }) => {
             },
             tooltip: {
                 callbacks: {
-                    afterLabel: (context: any) => {
+                    afterLabel: (context: TooltipItem<'line'>) => {
                         const entry = data.find(e =>
                             e.location === context.dataset.label &&
                             format(e.timestamp, 'dd/MM HH:mm') === context.label
