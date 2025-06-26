@@ -5,8 +5,8 @@ import { PainForm } from './components/PainForm'
 import { PainChart } from './components/PainChart'
 import { PainList } from './components/PainList'
 import { DataTransferButtons } from './components/DataTransferButtons'
-import { getEntries, removeEntry } from './services/painStorage'
-import type { PainData } from './types/pain'
+import { getEntries, removeEntry, updateEntry } from './services/painStorage'
+import type { PainData, PainEntry } from './types/pain'
 
 const theme = createTheme({
   palette: {
@@ -32,6 +32,11 @@ function App() {
     setPainData(getEntries())
   }
 
+  const handleUpdate = (entry: PainEntry) => {
+    updateEntry(entry)
+    setPainData(getEntries())
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -44,7 +49,7 @@ function App() {
             <PainForm onSubmit={handleNewEntry} />
           </Grid>
           <Grid item xs={12} md={7}>
-            <PainList entries={painData} onDelete={handleDelete} />
+            <PainList entries={painData} onDelete={handleDelete} onUpdate={handleUpdate} />
           </Grid>
         </Grid>
         <PainChart data={painData} />

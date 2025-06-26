@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { List, ListItem, ListItemText, IconButton, Typography, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, ListItemButton, Pagination } from '@mui/material';
+import { List, ListItem, ListItemText, IconButton, Typography, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, ListItemButton, Pagination, Slider, Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import type { PainEntry } from '../types/pain';
 import { format } from 'date-fns';
@@ -8,9 +8,10 @@ import { useState } from 'react';
 interface PainListProps {
   entries: PainEntry[];
   onDelete: (id: string) => void;
+  onUpdate: (entry: PainEntry) => void;
 }
 
-export const PainList: FC<PainListProps> = ({ entries, onDelete }) => {
+export const PainList: FC<PainListProps> = ({ entries, onDelete, onUpdate }) => {
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [selected, setSelected] = useState<PainEntry | null>(null);
   const [page, setPage] = useState(1);
@@ -31,14 +32,28 @@ export const PainList: FC<PainListProps> = ({ entries, onDelete }) => {
           <ListItem
             key={entry.id}
             secondaryAction={
-              <IconButton edge="end" aria-label="delete" onClick={e => { e.stopPropagation(); setConfirmId(entry.id); }}>
-                <DeleteIcon />
-              </IconButton>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Slider
+                  value={entry.intensity}
+                  min={1}
+                  max={10}
+                  step={1}
+                  marks
+                  size="small"
+                  valueLabelDisplay="auto"
+                  sx={{ width: 110 }}
+                  onChange={(_, value) => onUpdate({ ...entry, intensity: value as number })}
+                  onClick={e => e.stopPropagation()}
+                />
+                <IconButton edge="end" aria-label="delete" onClick={e => { e.stopPropagation(); setConfirmId(entry.id); }}>
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
             }
           >
             <ListItemButton onClick={() => setSelected(entry)}>
               <ListItemText
-                primary={`[${format(entry.timestamp, 'dd/MM HH:mm')}] ${entry.location} - Intensidade: ${entry.intensity}`}
+                primary={`[${format(entry.timestamp, 'dd/MM HH:mm')}] ${entry.location}`}
                 secondary={entry.comment ? 'Clique para ver comentário' : undefined}
               />
             </ListItemButton>

@@ -47,6 +47,14 @@ export const removeEntry = (id: string): void => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 };
 
+export const updateEntry = (updated: PainEntry): void => {
+    migratePainEntries();
+    const data = getEntries().map(entry =>
+        entry.id === updated.id ? { ...updated } : entry
+    );
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+};
+
 export const exportEntries = (): string => {
     migratePainEntries();
     return JSON.stringify(getEntries(), null, 2);
