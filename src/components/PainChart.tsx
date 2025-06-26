@@ -39,8 +39,8 @@ export const PainChart: FC<PainChartProps> = ({ data }) => {
     const pointIdsRef = useRef<(string | null)[][]>([]); // ids dos pontos por dataset
 
     useEffect(() => {
-        const sortedData = [...data].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-        const labels = sortedData.map(entry => format(entry.timestamp, 'dd/MM HH:mm'));
+        const sortedData = [...data].sort((a, b) => a.timestamp - b.timestamp);
+        const labels = sortedData.map(entry => format(new Date(entry.timestamp), 'dd/MM HH:mm'));
         const locations = Array.from(new Set(data.map(entry => entry.location)));
         const colors = locations.map((_, i) => `hsl(${(i * 360) / locations.length}, 70%, 50%)`);
         const pointIds: (string | null)[][] = [];
@@ -140,7 +140,7 @@ export const PainChart: FC<PainChartProps> = ({ data }) => {
                     afterLabel: (context: TooltipItem<'line'>) => {
                         const entry = data.find(e =>
                             e.location === context.dataset.label &&
-                            format(e.timestamp, 'dd/MM HH:mm') === context.label
+                            format(new Date(e.timestamp), 'dd/MM HH:mm') === context.label
                         );
                         return entry?.comment ? `Comentário: ${entry.comment}` : '';
                     }

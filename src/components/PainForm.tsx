@@ -24,7 +24,7 @@ export const PainForm: FC<PainFormProps> = ({ onSubmit }) => {
         e.preventDefault();
         const entry: PainEntry = {
             id: generateId(),
-            timestamp: new Date(),
+            timestamp: Date.now(),
             location,
             intensity,
             comment: comment || undefined

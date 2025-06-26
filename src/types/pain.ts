@@ -1,6 +1,7 @@
 export interface PainEntry {
     id: string;
-    timestamp: Date;
+    /** Unix timestamp in milliseconds */
+    timestamp: number;
     intensity: number;
     location: string;
     comment?: string;
