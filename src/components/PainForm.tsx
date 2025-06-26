@@ -13,11 +13,15 @@ export const PainForm: FC<PainFormProps> = ({ onSubmit }) => {
     const [intensity, setIntensity] = useState(5);
     const [comment, setComment] = useState('');
     const [locations, setLocations] = useState<string[]>([]);
+    const [quickIntensities, setQuickIntensities] = useState<Record<string, number>>({});
 
     useEffect(() => {
         // Buscar locais únicos já registrados
         const uniqueLocations = Array.from(new Set(getEntries().map(e => e.location)));
         setLocations(uniqueLocations);
+        const intensities: Record<string, number> = {};
+        uniqueLocations.forEach(loc => { intensities[loc] = 5; });
+        setQuickIntensities(intensities);
     }, []);
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -33,6 +37,18 @@ export const PainForm: FC<PainFormProps> = ({ onSubmit }) => {
         setLocation('');
         setIntensity(5);
         setComment('');
+        onSubmit();
+    };
+
+    const handleQuickSubmit = (loc: string) => {
+        const entry: PainEntry = {
+            id: generateId(),
+            timestamp: new Date(),
+            location: loc,
+            intensity: quickIntensities[loc],
+        };
+        saveEntry(entry);
+        setQuickIntensities(prev => ({ ...prev, [loc]: 5 }));
         onSubmit();
     };
 
@@ -98,6 +114,31 @@ export const PainForm: FC<PainFormProps> = ({ onSubmit }) => {
                     Salvar
                 </Button>
             </Box>
+            {locations.length > 0 && (
+                <Box sx={{ mt: 3 }}>
+                    <Typography variant="subtitle1" align="center" gutterBottom fontWeight={500}>
+                        Registro Rápido
+                    </Typography>
+                    {locations.map(loc => (
+                        <Box key={loc} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                            <Typography sx={{ width: 80 }}>{loc}</Typography>
+                            <Slider
+                                value={quickIntensities[loc] || 5}
+                                onChange={(_, value) => setQuickIntensities(prev => ({ ...prev, [loc]: value as number }))}
+                                min={1}
+                                max={10}
+                                step={1}
+                                marks
+                                valueLabelDisplay="auto"
+                                sx={{ flexGrow: 1, mx: 2 }}
+                            />
+                            <Button variant="contained" size="small" onClick={() => handleQuickSubmit(loc)}>
+                                Registrar
+                            </Button>
+                        </Box>
+                    ))}
+                </Box>
+            )}
         </Paper>
     );
 };
