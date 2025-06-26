@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { FC } from 'react';
-import { Box, Button, TextField, Slider, Typography, Paper, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { Box, Button, TextField, Slider, Typography, Paper, Divider } from '@mui/material';
 import type { PainEntry } from '../types/pain';
 import { generateId, saveEntry, getEntries } from '../services/painStorage';
 
@@ -12,27 +12,57 @@ export const PainForm: FC<PainFormProps> = ({ onSubmit }) => {
     const [location, setLocation] = useState('');
     const [intensity, setIntensity] = useState(5);
     const [comment, setComment] = useState('');
-    const [locations, setLocations] = useState<string[]>([]);
+    const [existingLocations, setExistingLocations] = useState<string[]>([]);
+    const [existingIntensities, setExistingIntensities] = useState<Record<string, number>>({});
 
     useEffect(() => {
         // Buscar locais únicos já registrados
         const uniqueLocations = Array.from(new Set(getEntries().map(e => e.location)));
-        setLocations(uniqueLocations);
+        setExistingLocations(uniqueLocations);
+        setExistingIntensities(
+            uniqueLocations.reduce<Record<string, number>>((acc, loc) => {
+                acc[loc] = 5;
+                return acc;
+            }, {})
+        );
     }, []);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const entry: PainEntry = {
-            id: generateId(),
-            timestamp: new Date(),
-            location,
-            intensity,
-            comment: comment || undefined
-        };
-        saveEntry(entry);
+        const now = new Date();
+        // Salvar intensidade para locais existentes
+        existingLocations.forEach(loc => {
+            const entry: PainEntry = {
+                id: generateId(),
+                timestamp: now,
+                location: loc,
+                intensity: existingIntensities[loc] ?? 5,
+            };
+            saveEntry(entry);
+        });
+
+        if (location.trim()) {
+            const entry: PainEntry = {
+                id: generateId(),
+                timestamp: now,
+                location,
+                intensity,
+                comment: comment || undefined,
+            };
+            saveEntry(entry);
+        }
+
+        // Resetar campos
         setLocation('');
         setIntensity(5);
         setComment('');
+        setExistingIntensities(() => {
+            const updated: Record<string, number> = {};
+            existingLocations.forEach(loc => {
+                updated[loc] = 5;
+            });
+            return updated;
+        });
         onSubmit();
     };
 
@@ -42,28 +72,38 @@ export const PainForm: FC<PainFormProps> = ({ onSubmit }) => {
                 <Typography variant="h6" gutterBottom align="center" fontWeight={600}>
                     Registrar Dor
                 </Typography>
-                {locations.length > 0 && (
-                  <FormControl fullWidth margin="normal" size="small">
-                    <InputLabel id="select-location-label">Escolher Local</InputLabel>
-                    <Select
-                      labelId="select-location-label"
-                      value={location}
-                      label="Escolher Local"
-                      onChange={e => setLocation(e.target.value)}
-                    >
-                      <MenuItem value=""><em>Novo local...</em></MenuItem>
-                      {locations.map(loc => (
-                        <MenuItem key={loc} value={loc}>{loc}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                {existingLocations.length > 0 && (
+                  <>
+                    <Typography align="center" sx={{ mt: 1 }}>
+                      Locais registrados
+                    </Typography>
+                    {existingLocations.map(loc => (
+                      <Box key={loc} sx={{ mt: 2 }}>
+                        <Typography gutterBottom>{loc}</Typography>
+                        <Slider
+                          value={existingIntensities[loc]}
+                          onChange={(_, value) =>
+                            setExistingIntensities(prev => ({ ...prev, [loc]: value as number }))
+                          }
+                          min={1}
+                          max={10}
+                          step={1}
+                          marks
+                          valueLabelDisplay="auto"
+                        />
+                        <Divider sx={{ mt: 1 }} />
+                      </Box>
+                    ))}
+                  </>
                 )}
+                <Typography align="center" sx={{ mt: 2 }}>
+                    Novo local
+                </Typography>
                 <TextField
                     fullWidth
                     label="Local da Dor"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    required
                     margin="normal"
                     size="small"
                 />
