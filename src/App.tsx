@@ -5,7 +5,7 @@ import { PainForm } from './components/PainForm'
 import { PainChart } from './components/PainChart'
 import { PainList } from './components/PainList'
 import { DataTransferButtons } from './components/DataTransferButtons'
-import { getEntries, removeEntry } from './services/painStorage'
+import { getEntries, removeEntry, removeEntriesByLocation } from './services/painStorage'
 import type { PainData } from './types/pain'
 
 const theme = createTheme({
@@ -32,6 +32,11 @@ function App() {
     setPainData(getEntries())
   }
 
+  const handleDeleteLocation = (location: string) => {
+    removeEntriesByLocation(location)
+    setPainData(getEntries())
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -44,7 +49,7 @@ function App() {
             <PainForm onSubmit={handleNewEntry} />
           </Grid>
           <Grid item xs={12} md={7}>
-            <PainList entries={painData} onDelete={handleDelete} />
+            <PainList entries={painData} onDelete={handleDelete} onDeleteLocation={handleDeleteLocation} />
           </Grid>
         </Grid>
         <PainChart data={painData} />
