@@ -2,15 +2,18 @@ import type { PainEntry } from '../types/pain';
 
 const STORAGE_KEY = 'pain_tracker_data';
 
-// Função de migração para garantir que todos os timestamps sejam Date
+// Função de migração para garantir que todos os timestamps sejam números
 export const migratePainEntries = (): void => {
     const data = localStorage.getItem(STORAGE_KEY);
     if (!data) return;
     const parsed = JSON.parse(data) as Array<Record<string, unknown>>;
     let changed = false;
     const migrated = parsed.map((entry) => {
-        const timestamp = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.timestamp as string | number);
-        if (!(entry.timestamp instanceof Date)) {
+        let timestamp: number;
+        if (typeof entry.timestamp === 'number') {
+            timestamp = entry.timestamp;
+        } else {
+            timestamp = new Date(entry.timestamp as string | number).getTime();
             changed = true;
         }
         return { ...(entry as unknown as PainEntry), timestamp } as PainEntry;
@@ -33,7 +36,9 @@ export const getEntries = (): PainEntry[] => {
     if (!data) return [];
     return (JSON.parse(data) as Array<Record<string, unknown>>).map((entry) => ({
         ...(entry as unknown as PainEntry),
-        timestamp: new Date(entry.timestamp as string | number)
+        timestamp: typeof entry.timestamp === 'number'
+            ? entry.timestamp
+            : new Date(entry.timestamp as string | number).getTime(),
     }));
 };
 
@@ -62,7 +67,9 @@ export const importEntries = (json: string): void => {
     const parsed = JSON.parse(json) as Array<Record<string, unknown>>;
     const entries: PainEntry[] = parsed.map(entry => ({
         ...(entry as unknown as PainEntry),
-        timestamp: new Date(entry.timestamp as string | number)
+        timestamp: typeof entry.timestamp === 'number'
+            ? entry.timestamp
+            : new Date(entry.timestamp as string | number).getTime()
     }));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
 };

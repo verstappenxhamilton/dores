@@ -61,7 +61,7 @@ export const PainList: FC<PainListProps> = ({ entries, onDelete, onDeleteLocatio
           >
             <ListItemButton onClick={() => setSelected(entry)}>
               <ListItemText
-                primary={`[${format(entry.timestamp, 'dd/MM HH:mm')}] ${entry.location} - Intensidade: ${entry.intensity}`}
+                primary={`[${format(new Date(entry.timestamp), 'dd/MM HH:mm')}] ${entry.location} - Intensidade: ${entry.intensity}`}
                 secondary={entry.comment ? 'Clique para ver comentário' : undefined}
               />
             </ListItemButton>
@@ -101,7 +101,7 @@ export const PainList: FC<PainListProps> = ({ entries, onDelete, onDeleteLocatio
         <DialogContent sx={{ minHeight: 120 }}>
           {selected && (
             <>
-              <Typography><b>Data:</b> {format(selected.timestamp, 'dd/MM/yyyy HH:mm')}</Typography>
+              <Typography><b>Data:</b> {format(new Date(selected.timestamp), 'dd/MM/yyyy HH:mm')}</Typography>
               <Typography><b>Local:</b> {selected.location}</Typography>
               <Typography><b>Intensidade:</b> {selected.intensity}</Typography>
               <Typography sx={{ mt: 2 }}><b>Comentário:</b> {selected.comment || 'Nenhum'}</Typography>
