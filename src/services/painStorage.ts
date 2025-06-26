@@ -47,6 +47,12 @@ export const removeEntry = (id: string): void => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 };
 
+export const removeEntriesByLocation = (location: string): void => {
+    migratePainEntries();
+    const data = getEntries().filter(entry => entry.location !== location);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+};
+
 export const exportEntries = (): string => {
     migratePainEntries();
     return JSON.stringify(getEntries(), null, 2);

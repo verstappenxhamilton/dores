@@ -8,11 +8,13 @@ import { useState } from 'react';
 interface PainListProps {
   entries: PainEntry[];
   onDelete: (id: string) => void;
+  onDeleteLocation: (location: string) => void;
 }
 
-export const PainList: FC<PainListProps> = ({ entries, onDelete }) => {
+export const PainList: FC<PainListProps> = ({ entries, onDelete, onDeleteLocation }) => {
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [selected, setSelected] = useState<PainEntry | null>(null);
+  const [confirmLocation, setConfirmLocation] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   // Mostra todas as dores, mais recentes primeiro
   const shownEntries = entries.slice().reverse();
@@ -63,6 +65,16 @@ export const PainList: FC<PainListProps> = ({ entries, onDelete }) => {
           <Button color="error" onClick={() => { if (confirmId) { onDelete(confirmId); setConfirmId(null); } }}>Excluir</Button>
         </DialogActions>
       </Dialog>
+      <Dialog open={!!confirmLocation} onClose={() => setConfirmLocation(null)} maxWidth="xs" fullWidth>
+        <DialogTitle>Confirmar exclusão</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Excluir todos os registros desta dor?</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmLocation(null)}>Cancelar</Button>
+          <Button color="error" onClick={() => { if (confirmLocation) { onDeleteLocation(confirmLocation); setConfirmLocation(null); setSelected(null); } }}>Excluir</Button>
+        </DialogActions>
+      </Dialog>
       <Dialog open={!!selected} onClose={() => setSelected(null)} maxWidth="sm" fullWidth>
         <DialogTitle>Detalhes do Registro</DialogTitle>
         <DialogContent sx={{ minHeight: 120 }}>
@@ -77,6 +89,25 @@ export const PainList: FC<PainListProps> = ({ entries, onDelete }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setSelected(null)}>Fechar</Button>
+          {selected && (
+            <Button
+              color="error"
+              onClick={() => {
+                onDelete(selected.id)
+                setSelected(null)
+              }}
+            >
+              Excluir
+            </Button>
+          )}
+          {selected && (
+            <Button
+              color="error"
+              onClick={() => setConfirmLocation(selected.location)}
+            >
+              Excluir Dor
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </Paper>
