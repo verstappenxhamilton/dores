@@ -77,6 +77,17 @@ export const PainList: FC<PainListProps> = ({ entries, onDelete }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setSelected(null)}>Fechar</Button>
+          <Button
+            color="error"
+            onClick={() => {
+              if (selected) {
+                onDelete(selected.id);
+                setSelected(null);
+              }
+            }}
+          >
+            Excluir
+          </Button>
         </DialogActions>
       </Dialog>
     </Paper>
