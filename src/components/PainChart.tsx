@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FC } from 'react';
-import { Paper, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
+import { Paper, Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, Slider, Box } from '@mui/material';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -37,6 +37,7 @@ export const PainChart: FC<PainChartProps> = ({ data }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const chartRef = useRef<any>(null);
     const pointIdsRef = useRef<(string | null)[][]>([]); // ids dos pontos por dataset
+    const [widthFactor, setWidthFactor] = useState(1);
 
     useEffect(() => {
         const sortedData = [...data].sort((a, b) => a.timestamp - b.timestamp);
@@ -170,8 +171,21 @@ export const PainChart: FC<PainChartProps> = ({ data }) => {
     return (
         <>
         <Paper elevation={3} sx={{ width: '100%', maxWidth: '100%', mx: 'auto', p: 4, mt: 4, background: 'rgba(40,40,40,0.95)', borderRadius: 3 }}>
-            <div style={{ minHeight: 500, width: '100%' }}>
-                <Line ref={chartRef} data={chartData} options={options} height={500} onClick={handlePointClick} />
+            <Box sx={{ mb: 2 }}>
+                <Typography gutterBottom variant="body2">Largura do gráfico</Typography>
+                <Slider
+                    value={widthFactor}
+                    min={1}
+                    max={3}
+                    step={0.5}
+                    onChange={(_, val) => setWidthFactor(val as number)}
+                    valueLabelDisplay="auto"
+                />
+            </Box>
+            <div style={{ minHeight: 500, width: '100%', overflowX: 'auto' }}>
+                <div style={{ width: `${widthFactor * 100}%` }}>
+                    <Line ref={chartRef} data={chartData} options={options} height={500} onClick={handlePointClick} />
+                </div>
             </div>
         </Paper>
         <Dialog open={!!selected} onClose={() => setSelected(null)} maxWidth="sm" fullWidth>
